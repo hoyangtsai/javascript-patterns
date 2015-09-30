@@ -2,7 +2,7 @@
 var greet = new String("Hello there");
 // original string
 // temporarily convert to string object
-var greet = "Hello there";
+// var greet = "Hello there";
 
 console.log(greet.split(' ')[0]);
 
