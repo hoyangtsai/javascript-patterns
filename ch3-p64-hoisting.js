@@ -7,12 +7,12 @@ function bar() {
 }
 
 function hoistMe() {
-  console.log(typeof foo);
-  console.log(typeof bar);
-  
-  foo();
-  bar();
-  
+  console.log(typeof foo); // function
+  console.log(typeof bar);  // undefined
+
+  foo(); // local foo
+  bar(); // error
+
   function foo() {
     console.log('local foo');
   }
