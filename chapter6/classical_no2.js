@@ -1,21 +1,24 @@
-function Article() {
-  this.tags = ['js', 'css'];
+// 借用建構式
+
+// 父建構式
+function Parent(name) {
+  this.name = name || 'Adam';
 }
-var article = new Article();
 
-function BlogPost() {}
-BlogPost.prototype = article;
-var blog = new BlogPost();
+// 在原型中新增功能
+Parent.prototype.say = function() {
+  return this.name;
+};
 
-function StaticPage() {
-  Article.call(this);
+// 子建構式
+function Child(name) {
+  Parent.apply(this, arguments);
 }
-var page = new StaticPage();
 
-console.log(article.hasOwnProperty('tags')); // true
-console.log(blog.hasOwnProperty('tags')); // false
-console.log(page.hasOwnProperty('tags')); // true;
+var kid = new Child("Patrick");
+console.log(kid.name); // "Patrick"
+delete kid.name;
+console.log(kid.name); // undefined
+console.log(typeof kid.say); // undefined
 
-blog.tags.push('html');
-page.tags.push('php');
-console.log(article.tags.join(', ')); // "js, css, html"
+// inherit parent constructor only without calling "inherit" function every time which is inefficient

@@ -42,29 +42,39 @@ function Child(a, c, b, d) {
 ```
 用這個方法，你只繼承了在父建構式中加至 this 的屬性，而沒有繼承到加至原型的成員。
 
+```javascript
+function Article() {
+  this.tags = ['js', 'css'];
+}
+var article = new Article();
+
+function BlogPost() {}
+BlogPost.prototype = article;
+var blog = new BlogPost();
+
+function StaticPage() {
+  Article.call(this);
+}
+var page = new StaticPage();
+
+console.log(article.hasOwnProperty('tags')); // true
+console.log(blog.hasOwnProperty('tags')); // false
+console.log(page.hasOwnProperty('tags')); // true;
+
+blog.tags.push('html');
+page.tags.push('php');
+console.log(article.tags.join(', ')); // "js, css, html"
+```
+
+[Classical #2](https://github.com/hoyangtsai/javascript-patterns/blob/master/chapter6/classical_no2.js)
+
+在 new Child 物件和 Parent 之間不再有連結，那是因為 Child.prototype 根本沒被使用，所以它只是指向一個空物件。使用這個模式，kid 會擁有自己的 name 屬性，但 say() 方法則沒有繼承到，而且試著呼叫它就會發生錯誤。這樣的繼承是一次性的將父建構式的自身屬性，複製到子物件的自身屬性而已，沒有保留 `__proto__` 連結。
+
 ### 用借用建構式實現多重繼承
 使用借用建構式模式，只需要借用多個建構式就可以達成多重繼承：
-```javascript
-function Cat() {
-  this.legs = 4;
-  this.say = function() {
-    return "meaowww";
-  }
-}
 
-function Bird() {
-  this.wings = 2;
-  this.fly = true;
-}
+[Classical #2 - Multi-inheritance](https://github.com/hoyangtsai/javascript-patterns/blob/master/chapter6/classical_no2_multi-inheritance.js)
 
-function CatWings() {
-  Cat.apply(this);
-  Bird.apply(this);
-}
-
-var jane = new CatWings();
-console.log(jane);
-```
 ### 借用建構式模式的優點與缺點
 此模式的缺點很明顯，就是原型的屬性都沒有被繼承，而且就如前面所提的，原型是用來放置重複利用的屬性和方法的地方，因為它不會為每個實體重新建立。
 
@@ -118,5 +128,26 @@ function inherit(C, P) {
   F.prototype = P.prototype;
   C.prototype = new F();
   C.uber = P.prototype;
+}
+```
+#### 重新設定建構式的參考
+對於這個近乎完美的 classical 繼承函式，最後一件要加諸其上的事情，是重新設定建構式的參考，以便之後萬一需要時可以使用。
+
+若不重設建構式的參考，則所有的子物件會回報 Parent() 是他的建構式，這樣毫無用處。所以若使用前一份 inherit() 實作，可以觀察到這樣的行為。
+```javascript
+var kid = new Child();
+kid.constructor.name; // "Parent"
+kid.constructor === Parent; // true;
+```
+這個 constructor 屬性很少用，但在執行時期用來檢查物件很方便。可以重新設定讓它指向預期中的建構式，而不會影響功能，因為這個屬性幾乎僅用來提供資訊。
+
+最後，有如傳說般的聖杯 (Holy Grail) 繼承模式會是這個樣子：
+```javascript
+function inherit(C, P) {
+  var F = function() {}
+  F.prototype = P.prototype;
+  C.prototype = new F();
+  C.uber = P.prototype;
+  C.prototype.constructor = C;
 }
 ```

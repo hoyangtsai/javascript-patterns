@@ -1,3 +1,5 @@
+// 預設的模式
+
 // 父建構式
 function Parent(name) {
   this.name = name || 'Adam';
@@ -20,7 +22,11 @@ inherit(Child, Parent);
 
 var kid = new Child();
 kid.name = "Patrick";
-console.log(kid.say());
-
+console.log(kid.say()); // Patrick
 delete kid.name;
-console.log(kid.say());
+console.log(kid.say()); // Adam
+
+// inherit parent constructor and functions without own constructor
+// consider this
+// var s = new Child('Seth');
+// s.say(); // Adam
