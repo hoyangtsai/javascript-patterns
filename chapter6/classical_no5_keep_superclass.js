@@ -21,5 +21,6 @@ function Child(name) {}
 // 繼承的魔法
 inherit(Child, Parent);
 
+// 試試水溫
 var kid = new Child();
-console.log(kid.uber);
+console.log(kid);
